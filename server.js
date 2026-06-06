@@ -3,6 +3,7 @@ const dotenv = require("dotenv");
 const cors = require("cors");
 
 const connectDb = require("./config/db");
+const userRoutes = require("./routes/userRoutes");
 
 dotenv.config();
 
@@ -12,6 +13,7 @@ connectDb();
 
 app.use(cors());
 app.use(express.json());
+app.use("/api/users", userRoutes);
 
 app.get("/", (req, res) => {
   res.send("Grocery API Running");
