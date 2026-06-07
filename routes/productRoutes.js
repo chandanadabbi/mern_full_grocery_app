@@ -7,7 +7,14 @@ const admin = require("../middleware/adminMiddleware");
 
 const {
   createProduct,
+  getProducts,
+  getProductById,
+  updateProduct,
+  deleteProduct,
 } = require("../controllers/productController");
+
+router.get("/", getProducts);
+router.get("/:id", getProductById);
 
 router.post(
   "/",
@@ -16,4 +23,21 @@ router.post(
   createProduct
 );
 
+router.put(
+  "/:id",
+  protect,
+  admin,
+  updateProduct
+);
+
+router.delete(
+  "/:id",
+  protect,
+  admin,
+  deleteProduct
+);
+
 module.exports = router;
+
+
+
