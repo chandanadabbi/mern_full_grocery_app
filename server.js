@@ -4,6 +4,8 @@ const cors = require("cors");
 
 const connectDb = require("./config/db");
 const userRoutes = require("./routes/userRoutes");
+const adminRoutes = require("./routes/adminRoutes");
+const productRoutes = require("./routes/productRoutes");
 
 dotenv.config();
 
@@ -14,6 +16,8 @@ connectDb();
 app.use(cors());
 app.use(express.json());
 app.use("/api/users", userRoutes);
+app.use("/api/admin", adminRoutes);
+app.use("/api/products", productRoutes);
 
 app.get("/", (req, res) => {
   res.send("Grocery API Running");
