@@ -2,21 +2,9 @@ const Product = require("../models/Product");
 
 const createProduct = async (req, res) => {
   try {
-    const {
-      name,
-      description,
-      price,
-      category,
-      stock,
-      image,
-    } = req.body;
+    const { name, description, price, category, stock, image } = req.body;
 
-    if (
-      !name ||
-      !description ||
-      !price ||
-      !category
-    ) {
+    if (!name || !description || !price || !category) {
       return res.status(400).json({
         success: false,
         message: "All fields are required",
@@ -47,12 +35,37 @@ const createProduct = async (req, res) => {
 
 const getProducts = async (req, res) => {
   try {
-    const products = await Product.find();
+    const filter = {};
+
+    // Search
+    if (req.query.keyword) {
+      filter.name = {
+        $regex: req.query.keyword,
+        $options: "i",
+      };
+    }
+
+    // Category Filter
+    if (req.query.category) {
+      filter.category = req.query.category;
+    }
+
+    const pageSize = 5;
+    const page = Number(req.query.pageNumber) || 1;
+
+    const count = await Product.countDocuments(filter);
+
+    const products = await Product.find(filter)
+      .populate("category")
+      .limit(pageSize)
+      .skip(pageSize * (page - 1));
 
     res.status(200).json({
       success: true,
-      count: products.length,
       products,
+      page,
+      pages: Math.ceil(count / pageSize),
+      totalProducts: count,
     });
   } catch (error) {
     res.status(500).json({
@@ -62,14 +75,10 @@ const getProducts = async (req, res) => {
   }
 };
 
-const getProductById = async (
-  req,
-  res
-) => {
+
+const getProductById = async (req, res) => {
   try {
-    const product = await Product.findById(
-      req.params.id
-    );
+    const product = await Product.findById(req.params.id);
 
     if (!product) {
       return res.status(404).json({
@@ -90,20 +99,12 @@ const getProductById = async (
   }
 };
 
-const updateProduct = async (
-  req,
-  res
-) => {
+const updateProduct = async (req, res) => {
   try {
-    const product =
-      await Product.findByIdAndUpdate(
-        req.params.id,
-        req.body,
-        {
-          new: true,
-          runValidators: true,
-        }
-      );
+    const product = await Product.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    });
 
     if (!product) {
       return res.status(404).json({
@@ -124,15 +125,9 @@ const updateProduct = async (
   }
 };
 
-const deleteProduct = async (
-  req,
-  res
-) => {
+const deleteProduct = async (req, res) => {
   try {
-    const product =
-      await Product.findById(
-        req.params.id
-      );
+    const product = await Product.findById(req.params.id);
 
     if (!product) {
       return res.status(404).json({
