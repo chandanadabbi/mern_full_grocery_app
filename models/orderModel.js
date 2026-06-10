@@ -13,11 +13,18 @@ const orderSchema = new mongoose.Schema(
         product: {
           type: mongoose.Schema.Types.ObjectId,
           ref: "Product",
+          required: true,
         },
 
-        quantity: Number,
+        quantity: {
+          type: Number,
+          required: true,
+        },
 
-        price: Number,
+        price: {
+          type: Number,
+          required: true,
+        },
       },
     ],
 
@@ -28,7 +35,30 @@ const orderSchema = new mongoose.Schema(
 
     status: {
       type: String,
+      enum: [
+        "Pending",
+        "Processing",
+        "Shipped",
+        "Delivered",
+        "Cancelled",
+      ],
       default: "Pending",
+    },
+
+    // Payment Fields
+    isPaid: {
+      type: Boolean,
+      default: false,
+    },
+
+    paidAt: {
+      type: Date,
+    },
+
+    paymentResult: {
+      razorpay_order_id: String,
+      razorpay_payment_id: String,
+      razorpay_signature: String,
     },
   },
   {
