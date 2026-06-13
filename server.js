@@ -82,6 +82,13 @@ app.use(
   swaggerUi.setup(swaggerSpec)
 );
 
+app.get("/health", (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: "Server is healthy",
+  });
+});
+
 app.listen(PORT, () => {
   console.log(`Server running on ${PORT}`);
 });

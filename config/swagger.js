@@ -9,10 +9,13 @@ const options = {
       description: "MERN Grocery App API",
     },
     servers: [
-      {
-        url: "http://localhost:5000",
-      },
-    ],
+  {
+    url: "http://localhost:5000",
+  },
+  {
+    url: "https://your-app-name.onrender.com",
+  },
+],
     components: {
       securitySchemes: {
         bearerAuth: {
