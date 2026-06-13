@@ -1,5 +1,7 @@
 const Order = require("../models/orderModel");
 const Cart = require("../models/cartModel");
+const User = require("../models/User");
+const sendEmail = require("../utils/sendEmail");
 
 const createOrder = async (req, res) => {
   try {
@@ -14,18 +16,15 @@ const createOrder = async (req, res) => {
       });
     }
 
-    const orderItems = cart.items.map(
-      (item) => ({
-        product: item.product._id,
-        quantity: item.quantity,
-        price: item.product.price,
-      })
-    );
+    const orderItems = cart.items.map((item) => ({
+      product: item.product._id,
+      quantity: item.quantity,
+      price: item.product.price,
+    }));
 
     const totalPrice = orderItems.reduce(
-      (acc, item) =>
-        acc + item.price * item.quantity,
-      0
+      (acc, item) => acc + item.price * item.quantity,
+      0,
     );
 
     const order = await Order.create({
@@ -36,7 +35,25 @@ const createOrder = async (req, res) => {
 
     cart.items = [];
     await cart.save();
+    const user = await User.findById(req.user);
 
+    await sendEmail(
+      user.email,
+      "Order Confirmation",
+      `
+  <h2>Order Confirmed</h2>
+
+  <p>Hello ${user.name},</p>
+
+  <p>Your order has been placed successfully.</p>
+
+  <p><strong>Order ID:</strong> ${order._id}</p>
+
+  <p><strong>Total Amount:</strong> ₹${totalPrice}</p>
+
+  <p>Thank you for shopping with us!</p>
+  `,
+    );
     res.status(201).json({
       success: true,
       order,
@@ -69,9 +86,9 @@ const getMyOrders = async (req, res) => {
 
 const getOrderById = async (req, res) => {
   try {
-    const order = await Order.findById(
-      req.params.id
-    ).populate("orderItems.product");
+    const order = await Order.findById(req.params.id).populate(
+      "orderItems.product",
+    );
 
     if (!order) {
       return res.status(404).json({
@@ -92,14 +109,9 @@ const getOrderById = async (req, res) => {
   }
 };
 
-const updateOrderStatus = async (
-  req,
-  res
-) => {
+const updateOrderStatus = async (req, res) => {
   try {
-    const order = await Order.findById(
-      req.params.id
-    );
+    const order = await Order.findById(req.params.id);
 
     order.status = req.body.status;
 

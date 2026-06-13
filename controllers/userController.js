@@ -1,19 +1,44 @@
 const User = require("../models/User");
+const sendEmail = require("../utils/sendEmail");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+
 
 const registerUser = async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
+    // Check empty fields
     if (!name || !email || !password) {
       return res.status(400).json({
         success: false,
-        message: "All fields are required",
+        message: "Please fill all fields",
       });
     }
 
-    const userExists = await User.findOne({ email });
+    // Validate email
+    const emailRegex =
+      /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid email format",
+      });
+    }
+
+    // Validate password
+    if (password.length < 6) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "Password must be at least 6 characters",
+      });
+    }
+
+    const userExists = await User.findOne({
+      email,
+    });
 
     if (userExists) {
       return res.status(400).json({
@@ -21,28 +46,26 @@ const registerUser = async (req, res) => {
         message: "User already exists",
       });
     }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-
+    const hashedPassword=await bcrypt.hash(password,10)
     const user = await User.create({
       name,
       email,
-      password: hashedPassword,
+      password:hashedPassword
     });
+
+    await sendEmail(
+      user.email,
+      "Welcome to Grocery App",
+      `Hello ${user.name},
+Welcome to our Grocery App!`
+    );
 
     res.status(201).json({
       success: true,
       message: "User registered successfully",
-      user: {
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-      },
+      user,
     });
   } catch (error) {
-    console.log(error);
-
     res.status(500).json({
       success: false,
       message: error.message,

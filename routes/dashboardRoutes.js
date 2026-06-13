@@ -7,20 +7,47 @@ const {
   getRecentOrders,
 } = require("../controllers/dashboardController");
 
-const protect = require(
-  "../middleware/authMiddleware"
-);
+const protect = require("../middleware/authMiddleware");
 
-router.get(
-  "/stats",
-  protect,
-  getDashboardStats
-);
+/**
+ * @swagger
+ * tags:
+ *   name: Dashboard
+ *   description: Dashboard APIs
+ */
 
-router.get(
-  "/recent-orders",
-  protect,
-  getRecentOrders
-);
+/**
+ * @swagger
+ * /api/dashboard/stats:
+ *   get:
+ *     summary: Get Dashboard Statistics
+ *     description: Fetch total users, orders, revenue and other dashboard statistics.
+ *     tags: [Dashboard]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Dashboard statistics fetched successfully
+ *       401:
+ *         description: Unauthorized
+ */
+router.get("/stats", protect, getDashboardStats);
+
+/**
+ * @swagger
+ * /api/dashboard/recent-orders:
+ *   get:
+ *     summary: Get Recent Orders
+ *     description: Fetch recently placed orders for dashboard display.
+ *     tags: [Dashboard]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Recent orders fetched successfully
+ *       401:
+ *         description: Unauthorized
+ */
+router.get("/recent-orders", protect, getRecentOrders);
 
 module.exports = router;
