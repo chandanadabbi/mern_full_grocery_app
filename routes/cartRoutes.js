@@ -6,12 +6,12 @@ const {
   addToCart,
   getCart,
   removeFromCart,
+  increaseQuantity,
+  decreaseQuantity,
+  checkoutCart
 } = require("../controllers/cartController");
 
-const protect = require(
-  "../middleware/authMiddleware"
-);
-
+const protect = require("../middleware/authMiddleware");
 
 /**
  * @swagger
@@ -32,12 +32,7 @@ const protect = require(
  *       200:
  *         description: Added to cart
  */
-router.post(
-  "/",
-  protect,
-  addToCart
-);
-
+router.post("/", protect, addToCart);
 
 /**
  * @swagger
@@ -51,12 +46,7 @@ router.post(
  *       200:
  *         description: Cart fetched
  */
-router.get(
-  "/",
-  protect,
-  getCart
-);
-
+router.get("/", protect, getCart);
 
 /**
  * @swagger
@@ -70,10 +60,68 @@ router.get(
  *       200:
  *         description: Product removed
  */
-router.delete(
-  "/:productId",
-  protect,
-  removeFromCart
-);
+router.delete("/:productId", protect, removeFromCart);
+
+/**
+ * @swagger
+ * /api/cart/increase/{productId}:
+ *   put:
+ *     summary: Increase Product Quantity
+ *     tags: [Cart]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: productId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Product ID
+ *     responses:
+ *       200:
+ *         description: Quantity increased successfully
+ *       404:
+ *         description: Item not found
+ */
+router.put("/increase/:productId", protect, increaseQuantity);
+
+/**
+ * @swagger
+ * /api/cart/decrease/{productId}:
+ *   put:
+ *     summary: Decrease Product Quantity
+ *     tags: [Cart]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: productId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Product ID
+ *     responses:
+ *       200:
+ *         description: Quantity decreased successfully
+ *       404:
+ *         description: Item not found
+ */
+router.put("/decrease/:productId", protect, decreaseQuantity);
+
+/**
+ * @swagger
+ * /api/cart/checkout:
+ *   post:
+ *     summary: Checkout Cart
+ *     tags: [Cart]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Proceed to payment
+ *       400:
+ *         description: Cart is empty
+ */
+router.post("/checkout", protect, checkoutCart);
 
 module.exports = router;

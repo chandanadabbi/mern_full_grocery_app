@@ -3,10 +3,10 @@
 Project: Grocery App Backend
 
 Live API:
-https://your-grocery-app.onrender.com
+https://mern-grocery-app-5kfi.onrender.com
 
 Swagger Docs:
-https://your-grocery-app.onrender.com/api-docs
+https://mern-grocery-app-5kfi.onrender.com/api-docs
 
 Tech Stack:
 Node.js
