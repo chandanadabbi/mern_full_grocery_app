@@ -33,40 +33,25 @@ const orderSchema = new mongoose.Schema(
       required: true,
     },
 
+    paymentMethod: {
+      type: String,
+      default: "Cash On Delivery",
+    },
+
     status: {
       type: String,
-      enum: [
-        "Pending",
-        "Processing",
-        "Shipped",
-        "Delivered",
-        "Cancelled",
-      ],
+      enum: ["Pending", "Processing", "Shipped", "Delivered", "Cancelled"],
       default: "Pending",
     },
 
-    // Payment Fields
     isPaid: {
       type: Boolean,
       default: false,
     },
-
-    paidAt: {
-      type: Date,
-    },
-
-    paymentResult: {
-      razorpay_order_id: String,
-      razorpay_payment_id: String,
-      razorpay_signature: String,
-    },
   },
   {
     timestamps: true,
-  }
+  },
 );
 
-module.exports = mongoose.model(
-  "Order",
-  orderSchema
-);
+module.exports = mongoose.model("Order", orderSchema);

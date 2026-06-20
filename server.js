@@ -23,6 +23,7 @@ const reviewRoutes = require("./routes/reviewRoutes");
 const couponRoutes = require("./routes/couponRoutes");
 const analyticsRoutes = require("./routes/analyticsRoutes");
 
+
 dotenv.config();
 
 const app = express();
@@ -60,6 +61,7 @@ app.use("/api/reviews", reviewRoutes);
 app.use("/api/coupons", couponRoutes);
 app.use("/api/analytics", analyticsRoutes);
 
+
 app.get("/", (req, res) => {
   res.send("Grocery API Running");
 });
@@ -76,11 +78,7 @@ app.use((err, req, res, next) => {
   });
 });
 
-app.use(
-  "/api-docs",
-  swaggerUi.serve,
-  swaggerUi.setup(swaggerSpec)
-);
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.get("/health", (req, res) => {
   res.status(200).json({

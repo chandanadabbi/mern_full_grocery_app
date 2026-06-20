@@ -2,17 +2,9 @@ const express = require("express");
 
 const router = express.Router();
 
-const protect = require(
-  "../middleware/authMiddleware"
-);
+const { createOrder } = require("../controllers/orderController");
 
-const {
-  createOrder,
-  getMyOrders,
-  getOrderById,
-  updateOrderStatus,
-} = require("../controllers/orderController");
-
+const protect = require("../middleware/authMiddleware");
 
 /**
  * @swagger
@@ -20,7 +12,6 @@ const {
  *   name: Orders
  *   description: Order APIs
  */
-
 
 /**
  * @swagger
@@ -32,43 +23,8 @@ const {
  *       - bearerAuth: []
  *     responses:
  *       201:
- *         description: Order created
+ *         description: Order Created
  */
-router.post(
-  "/",
-  protect,
-  createOrder
-);
-
-
-/**
- * @swagger
- * /api/orders/myorders:
- *   get:
- *     summary: Get My Orders
- *     tags: [Orders]
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: Orders fetched
- */
-router.get(
-  "/my-orders",
-  protect,
-  getMyOrders
-);
-
-router.get(
-  "/:id",
-  protect,
-  getOrderById
-);
-
-router.put(
-  "/:id/status",
-  protect,
-  updateOrderStatus
-);
+router.post("/", protect, createOrder);
 
 module.exports = router;
