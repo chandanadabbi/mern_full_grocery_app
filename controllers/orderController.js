@@ -48,6 +48,53 @@ const createOrder = async (req, res) => {
   }
 };
 
+const getMyOrders = async (req, res) => {
+  try {
+    const orders = await Order.find({
+      user: req.user,
+    })
+      .populate("orderItems.product")
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      orders,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+const getOrderDetails = async (req, res) => {
+  try {
+    const order = await Order.findById(req.params.id).populate(
+      "orderItems.product",
+    );
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      order,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
   createOrder,
+  getMyOrders,
+  getOrderDetails,
 };
